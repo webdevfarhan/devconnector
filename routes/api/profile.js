@@ -211,10 +211,91 @@ router.put(
 router.delete('/experience/:exp_id', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
-    const removeIndex = await profile.experience.map(item => item._id).indexOf(req.params.exp_id);
-    profile.experience.splice(removeIndex);
-    await profile.save();
-    res.json(profile);
+    const removeIndex = await profile.experience.map(item => item.id).indexOf(req.params.exp_id);
+    if (removeIndex !== -1) {
+      profile.experience.splice(removeIndex);
+      await profile.save();
+      res.json(profile);
+    } else {
+      res.status(400).json({ msg: 'Error, Invalid Experience Id' });
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+/*
+@route PUT api/profile/education
+@desc Add Profile education
+@access Private
+*/
+
+router.put(
+  '/education',
+  [
+    auth,
+    [
+      check('school', 'School is required')
+        .not()
+        .isEmpty(),
+      check('degree', 'Degree is required')
+        .not()
+        .isEmpty(),
+      check('fieldofstudy', 'Field of Study is required')
+        .not()
+        .isEmpty(),
+      check('from', 'From Date is required')
+        .not()
+        .isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { school, degree, fieldofstudy, from, to, current, description } = req.body;
+    const newEdu = {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description
+    };
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+      profile.education.unshift(newEdu);
+      await profile.save();
+      res.json(profile);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+/*
+@route DELETE api/profile/education/:edu_id
+@desc Delete education from profile
+@access Private
+*/
+
+router.delete('/education/:edu_id', auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    const removeIndex = await profile.education.map(item => item.id).indexOf(req.params.edu_id);
+    if (removeIndex !== -1) {
+      profile.education.splice(removeIndex);
+      await profile.save();
+      res.json(profile);
+    } else {
+      res.status(400).json({ msg: 'Error, Invalid education Id' });
+    }
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server error');
