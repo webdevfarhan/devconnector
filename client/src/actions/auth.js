@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
-import { REGISTER_FAIL, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR, LOGIN_SUCCESS } from './types';
+import { REGISTER_FAIL, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT } from './types';
 import setAuthToken from '../utils/setAuthToken';
 
 // Load user
@@ -25,12 +25,12 @@ export const loadUser = () => async dispatch => {
 // register user
 export const register = ({ name, email, password }) => async dispatch => {
   const config = {
-    header: {
-      'Content-Type': 'application-json'
+    headers: {
+      'Content-Type': 'application/json'
     }
   };
 
-  const body = { name, email, password };
+  const body = JSON.stringify({ name, email, password });
 
   try {
     const res = await axios.post('/api/users', body, config);
@@ -56,12 +56,12 @@ export const register = ({ name, email, password }) => async dispatch => {
 // Login user
 export const login = (email, password) => async dispatch => {
   const config = {
-    header: {
-      'Content-Type': 'application-json'
+    headers: {
+      'Content-Type': 'application/json'
     }
   };
 
-  const body = { email, password };
+  const body = JSON.stringify({ email, password });
 
   try {
     const res = await axios.post('/api/auth', body, config);
@@ -79,7 +79,15 @@ export const login = (email, password) => async dispatch => {
     }
 
     dispatch({
-      type: REGISTER_FAIL
+      type: LOGIN_FAIL
     });
   }
+};
+
+// logout / Clear Profile
+
+export const logout = () => dispatch => {
+  dispatch({
+    type: LOGOUT
+  });
 };
