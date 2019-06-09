@@ -17,9 +17,10 @@ const { check, validationResult } = require('express-validator/check');
 router.get('/me', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'avatar']);
-
     if (!profile) {
       return res.status(400).json({ msg: 'There is no profile for this user.' });
+    } else {
+      return res.json(profile);
     }
   } catch (err) {
     console.error(err.message);
@@ -118,7 +119,6 @@ router.get('/', async (req, res) => {
 */
 
 router.get('/user/:user_id', async (req, res) => {
-  console.log('gone');
   try {
     const profile = await Profile.findOne({ user: req.params.user_id }).populate('user', ['name', 'avatar']);
     if (!profile) return res.status(400).json({ msg: 'Profile not found' });

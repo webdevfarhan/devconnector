@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
-import { REGISTER_FAIL, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT } from './types';
+import { REGISTER_FAIL, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT, CLEAR_PROFILE } from './types';
 import setAuthToken from '../utils/setAuthToken';
 
 // Load user
@@ -41,7 +41,6 @@ export const register = ({ name, email, password }) => async dispatch => {
     });
     dispatch(loadUser());
   } catch (err) {
-    console.log('gone in catch');
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
@@ -65,14 +64,12 @@ export const login = (email, password) => async dispatch => {
 
   try {
     const res = await axios.post('/api/auth', body, config);
-    console.log('res : ', res);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data
     });
     dispatch(loadUser());
   } catch (err) {
-    console.log('gone in catch');
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
@@ -89,5 +86,8 @@ export const login = (email, password) => async dispatch => {
 export const logout = () => dispatch => {
   dispatch({
     type: LOGOUT
+  });
+  dispatch({
+    type: CLEAR_PROFILE
   });
 };
