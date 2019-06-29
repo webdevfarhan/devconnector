@@ -7,6 +7,7 @@ import Spinner from '../layout/Spinner';
 import ProfileTop from './ProfileTop';
 import ProfileAbout from './ProfileAbout';
 import ProfileExperience from './ProfileExperience';
+import ProfileGithub from './ProfileGithub';
 
 const Profile = ({ getProfileById, match, profile: { profile, loading }, auth }) => {
   useEffect(() => {
@@ -55,6 +56,8 @@ const Profile = ({ getProfileById, match, profile: { profile, loading }, auth })
                 <h4>No Education Credentials</h4>
               )}
             </div>
+
+            {profile.githubusername && <ProfileGithub username={profile.githubusername} />}
           </div>
         </Fragment>
       )}
